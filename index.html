@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The League</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --pitch: #0b3d2e;
+    --pitch-dark: #082a20;
+    --chalk: #f4efe4;
+    --amber: #e8a33d;
+    --claret: #7a1f2b;
+    --claret-bright: #a8283a;
+    --line: rgba(244,239,228,0.16);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 40px),
+      linear-gradient(180deg, var(--pitch) 0%, var(--pitch-dark) 100%);
+    color: var(--chalk);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+  }
+
+  /* ---- Header: matchday programme masthead ---- */
+  header{
+    border-bottom: 3px solid var(--amber);
+    padding: 28px 24px 22px;
+    text-align: center;
+    position: relative;
+  }
+  .eyebrow{
+    font-family:'Oswald', sans-serif;
+    letter-spacing: 0.35em;
+    font-size: 11px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  h1{
+    font-family:'Archivo Black', sans-serif;
+    font-size: clamp(32px, 8vw, 56px);
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+  .subhead{
+    font-family:'Oswald', sans-serif;
+    font-size: 13px;
+    color: rgba(244,239,228,0.65);
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  main{ max-width: 780px; margin: 0 auto; padding: 0 18px; }
+
+  section{ margin-top: 40px; }
+  .section-label{
+    font-family:'Oswald', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .section-label::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background: var(--line);
+  }
+
+  /* ---- Scoreboard status strip ---- */
+  .status-strip{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .status-cell{
+    background: var(--pitch-dark);
+    padding: 16px;
+  }
+  .status-cell .tag{
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .status-cell.win .tag{ color: var(--amber); }
+  .status-cell.lose .tag{ color: var(--claret-bright); }
+  .status-cell .name{
+    font-family:'Archivo Black', sans-serif;
+    font-size: 22px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    line-height: 1.15;
+  }
+  .status-cell .name.multi{ font-size: 16px; }
+  .status-cell .detail{
+    font-size: 12px;
+    color: rgba(244,239,228,0.6);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ---- Standings: flip-scoreboard style table ---- */
+  table{ width:100%; border-collapse: collapse; }
+  .standings th{
+    font-family:'Oswald', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-align: left;
+    color: rgba(244,239,228,0.5);
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .standings th.num, .standings td.num{ text-align:right; }
+  .standings td{
+    padding: 11px 6px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .standings tr:hover td{ background: rgba(244,239,228,0.03); }
+  .standings tr.row-winner td{ background: rgba(232,163,61,0.08); }
+  .standings tr.row-winner .gw-pts{ color: var(--amber); }
+  .standings tr.row-loser td{ background: rgba(168,40,58,0.08); }
+  .standings tr.row-loser .gw-pts{ color: var(--claret-bright); }
+  .rank-cell{
+    font-family:'Archivo Black', sans-serif;
+    font-size: 15px;
+    color: var(--amber);
+    width: 34px;
+  }
+  .move{ font-size: 11px; margin-left: 6px; }
+  .move.up{ color: #6fbf73; }
+  .move.down{ color: var(--claret-bright); }
+  .team-name{ font-weight:600; }
+  .manager-name{ font-size:12px; color: rgba(244,239,228,0.5); }
+  .gw-pts{ font-family:'Oswald', sans-serif; font-weight:600; }
+  .total-pts{ font-family:'Archivo Black', sans-serif; font-size: 15px; }
+
+  /* ---- Shot Duty ---- */
+  .section-intro{
+    font-size: 13px;
+    color: rgba(244,239,228,0.65);
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .gw-record-card{
+    border: 1px solid var(--line);
+    background: var(--pitch-dark);
+    padding: 16px;
+  }
+  .gw-record-head{
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244,239,228,0.45);
+    margin-bottom: 12px;
+  }
+  .loser-row{
+    display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom: 16px;
+  }
+  .loser-tag{
+    font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing:0.12em; text-transform:uppercase;
+    color: var(--claret-bright); margin-right: 4px;
+  }
+  .loser-name{
+    font-weight: 600;
+  }
+  .clickable-name{
+    cursor: pointer;
+    text-decoration: underline dotted rgba(244,239,228,0.3);
+    text-underline-offset: 3px;
+  }
+  .clickable-name:hover{ color: var(--amber); }
+  .nom-slot{ margin-bottom: 14px; }
+  .nom-slot:last-child{ margin-bottom:0; }
+  .nom-winner-label{
+    font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing:0.1em; text-transform:uppercase;
+    color: var(--amber); margin-bottom: 6px;
+  }
+  .nom-select-btn, .nominee-chosen{
+    display:flex; align-items:center; gap:8px;
+    background: transparent;
+    border: 1px dashed var(--line);
+    color: var(--chalk);
+    font-family:'Inter', sans-serif;
+    font-size: 13px;
+    padding: 9px 12px;
+    cursor: pointer;
+    width:100%;
+    text-align:left;
+  }
+  .nom-select-btn:hover{ border-color: var(--amber); color: var(--amber); }
+  .nominee-chosen{ border-style: solid; border-color: rgba(111,191,115,0.4); background: rgba(111,191,115,0.06); }
+  .nominee-chosen .change-link{
+    margin-left:auto; font-size: 10px; color: rgba(244,239,228,0.4); text-transform:uppercase; letter-spacing:0.08em;
+  }
+  .nom-dropdown{
+    margin-top: 6px;
+    border: 1px solid var(--line);
+    background: var(--pitch);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .nom-option{
+    padding: 10px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--line);
+  }
+  .nom-option:last-child{ border-bottom:none; }
+  .nom-option:hover{ background: rgba(232,163,61,0.1); color: var(--amber); }
+
+  .history-row{
+    display:flex; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .history-row:last-child{ border-bottom:none; }
+  .history-gw{
+    font-family:'Archivo Black', sans-serif;
+    font-size: 12px;
+    color: var(--amber);
+    width: 42px;
+    flex-shrink:0;
+    padding-top: 1px;
+  }
+  .history-detail{ flex:1; line-height:1.7; color: rgba(244,239,228,0.8); }
+  .history-detail .lbl{ color: rgba(244,239,228,0.4); font-size: 10px; text-transform:uppercase; letter-spacing:0.06em; margin-right: 5px; }
+  .history-detail div{ margin-bottom: 2px; }
+
+  /* ---- Profile modal ---- */
+  .modal-overlay{
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display:flex; align-items:center; justify-content:center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-overlay[hidden]{ display:none; }
+  .modal-card{
+    background: var(--pitch-dark);
+    border: 1px solid var(--amber);
+    max-width: 360px;
+    width:100%;
+    padding: 24px;
+    position: relative;
+  }
+  .modal-close{
+    position:absolute; top:10px; right:12px;
+    background:none; border:none; color: rgba(244,239,228,0.5);
+    font-size: 22px; cursor:pointer; line-height:1;
+  }
+  .modal-close:hover{ color: var(--chalk); }
+  .modal-eyebrow{
+    font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing:0.2em; text-transform:uppercase;
+    color: var(--amber); margin-bottom: 8px;
+  }
+  .modal-name{
+    font-family:'Archivo Black', sans-serif; font-size: 22px; text-transform:uppercase; margin-bottom: 4px;
+  }
+  .modal-total{
+    font-family:'Oswald', sans-serif; font-size: 13px; color: rgba(244,239,228,0.6); margin-bottom: 16px;
+  }
+  .modal-total strong{ color: var(--claret-bright); font-size: 20px; }
+  .modal-breakdown{ max-height: 240px; overflow-y:auto; }
+  .modal-breakdown .b-row{
+    display:flex; justify-content:space-between; gap: 10px; font-size: 12.5px;
+    padding: 8px 0; border-bottom: 1px solid var(--line);
+  }
+  .modal-breakdown .b-row:last-child{ border-bottom:none; }
+  .modal-breakdown .b-gw{ color: rgba(244,239,228,0.45); flex-shrink:0; }
+  .modal-empty{ font-size: 13px; color: rgba(244,239,228,0.4); text-align:center; padding: 10px 0; }
+
+  /* ---- Prize pot ---- */
+  .pot-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:1px; background: var(--line); border:1px solid var(--line);}
+  .pot-cell{ background: var(--pitch-dark); padding: 20px 14px; text-align:center; }
+  .pot-cell .place{ font-family:'Oswald', sans-serif; font-size: 11px; letter-spacing:0.2em; color: rgba(244,239,228,0.5); text-transform:uppercase;}
+  .pot-cell .share{ font-family:'Archivo Black', sans-serif; font-size: 30px; color: var(--amber); margin-top:8px;}
+  .pot-cell.first .share{ color: var(--amber); }
+  .pot-cell .desc{ font-size:11px; color: rgba(244,239,228,0.45); margin-top:4px; }
+  .pot-total{
+    text-align:center; margin-top: 14px; font-size: 12px; color: rgba(244,239,228,0.6);
+    font-family:'Oswald', sans-serif; letter-spacing: 0.05em;
+  }
+  .pot-total strong{ color: var(--chalk); }
+
+  /* ---- Rules notice board ---- */
+  .rules-board{
+    border: 1px solid var(--line);
+    background: var(--pitch-dark);
+    padding: 20px;
+  }
+  .rules-board ul{ list-style:none; }
+  .rules-board li{
+    font-size: 13.5px;
+    line-height: 1.6;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    display:flex;
+    gap: 12px;
+  }
+  .rules-board li:last-child{ border-bottom:none; }
+  .rules-board li::before{
+    content: '\26BD';
+    font-size: 12px;
+    flex-shrink:0;
+    opacity: 0.7;
+  }
+  .entry-note{
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--amber);
+    font-family:'Oswald', sans-serif;
+    letter-spacing: 0.03em;
+  }
+
+  .loading, .error-msg{
+    font-family:'Oswald', sans-serif;
+    font-size: 13px;
+    color: rgba(244,239,228,0.5);
+    padding: 20px 0;
+    text-align:center;
+  }
+  .error-msg{ color: var(--claret-bright); }
+
+  /* ---- Bump chart ---- */
+  .bump-scroll{
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid var(--line);
+    background: var(--pitch-dark);
+    padding: 10px 4px;
+  }
+  .bump-scroll svg{ display:block; }
+  .bump-line{ fill:none; stroke-width: 2.5; opacity: 0.85; }
+  .bump-line:hover{ opacity: 1; stroke-width: 3.5; }
+  .bump-dot{ cursor: default; }
+  .bump-gw-label{
+    font-family:'Oswald', sans-serif;
+    font-size: 9px;
+    fill: rgba(244,239,228,0.4);
+    text-anchor: middle;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .bump-rank-label{
+    font-family:'Archivo Black', sans-serif;
+    font-size: 10px;
+    fill: rgba(244,239,228,0.35);
+    text-anchor: end;
+  }
+  .bump-name-tag{
+    font-family:'Oswald', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .bump-badge{ stroke: var(--pitch-dark); stroke-width: 2; }
+  .bump-legend{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 12px;
+  }
+  .bump-legend-item{
+    display:flex; align-items:center; gap:6px;
+    font-size: 11px;
+    color: rgba(244,239,228,0.6);
+  }
+  .bump-legend-swatch{
+    width:10px; height:10px; border-radius:50%; flex-shrink:0;
+  }
+  .refresh-row{
+    display:flex; justify-content: space-between; align-items:center; margin-bottom: 14px;
+  }
+  .refresh-btn{
+    background: transparent; border: 1px solid var(--line); color: var(--chalk);
+    font-family:'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 7px 12px; cursor: pointer;
+  }
+  .refresh-btn:hover{ border-color: var(--amber); color: var(--amber); }
+  .refresh-btn:disabled{ opacity: 0.5; cursor: default; border-color: var(--line); color: var(--chalk); }
+  .last-updated{ font-size: 11px; color: rgba(244,239,228,0.4); }
+
+  footer{
+    text-align:center;
+    margin-top: 50px;
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244,239,228,0.3);
+  }
+
+  .diagnostics{
+    margin: 40px 24px 0;
+    border: 1px dashed var(--line);
+    padding: 16px 18px;
+  }
+  .diagnostics summary{
+    cursor: pointer;
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(244,239,228,0.5);
+  }
+  .diagnostics summary:hover{ color: var(--amber); }
+  .diag-status{
+    margin-top: 12px;
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    display: inline-block;
+    border: 1px solid var(--line);
+  }
+  .diag-status.loading{ color: var(--amber); border-color: rgba(232,163,61,0.4); }
+  .diag-status.complete{ color: #6fbf73; border-color: rgba(111,191,115,0.4); }
+  .diag-log{
+    margin-top: 14px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+  .diag-entry{
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(244,239,228,0.08);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  .diag-entry.ok{ color: #6fbf73; }
+  .diag-entry.fail{ color: #d9736b; }
+  .diag-entry .diag-time{ color: rgba(244,239,228,0.35); margin-right: 8px; }
+  .diag-empty{ color: rgba(244,239,228,0.35); font-size: 12px; }
+  .diag-clear-btn{
+    background: transparent; border: 1px solid var(--line); color: var(--chalk);
+    font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 10px; cursor: pointer; margin-top: 10px;
+  }
+  .diag-clear-btn:hover{ border-color: var(--amber); color: var(--amber); }
+
+  @media (max-width: 480px){
+    .status-strip{ grid-template-columns: 1fr; }
+    .pot-grid{ grid-template-columns: 1fr; }
+    .manager-name{ display:block; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Fantasy Premier League &middot; 2026/27</div>
+  <h1>The League</h1>
+  <div class="subhead" id="league-name">Loading league…</div>
+</header>
+
+<main>
+
+  <section id="status-section" style="display:none;">
+    <div class="section-label">This Gameweek</div>
+    <div class="status-strip">
+      <div class="status-cell win">
+        <div class="tag" id="gw-winner-tag">Nominates the shot</div>
+        <div class="name" id="gw-winner-name">—</div>
+        <div class="detail" id="gw-winner-detail">—</div>
+      </div>
+      <div class="status-cell lose">
+        <div class="tag" id="gw-loser-tag">Owes a shot</div>
+        <div class="name" id="gw-loser-name">—</div>
+        <div class="detail" id="gw-loser-detail">—</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="refresh-row">
+      <div class="section-label" style="margin-bottom:0; flex:1;">Standings</div>
+    </div>
+    <div id="standings-wrap">
+      <div class="loading">Fetching live standings…</div>
+    </div>
+    <div class="refresh-row" style="margin-top:10px;">
+      <span class="last-updated" id="last-updated"></span>
+      <button class="refresh-btn" id="refresh-btn">Refresh</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Season Movement</div>
+    <div class="section-intro" id="bump-intro">Rank in the league after every gameweek so far. Follow a line to see who's climbed and who's dropped.</div>
+    <div id="bump-wrap">
+      <div class="loading">Building movement chart…</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Shot Duty</div>
+    <div class="section-intro">Bottom of the gameweek drinks. Top of the gameweek nominates someone to double up. Tap a name to see their season shot count.</div>
+    <div id="shot-current-wrap">
+      <div class="loading">Loading gameweek result…</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Shot History</div>
+    <div id="shot-history-wrap">
+      <div class="loading">Loading history…</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Prize Pot</div>
+    <div class="pot-grid">
+      <div class="pot-cell">
+        <div class="place">3rd</div>
+        <div class="share">Entry</div>
+        <div class="desc">back</div>
+      </div>
+      <div class="pot-cell">
+        <div class="place">2nd</div>
+        <div class="share">30%</div>
+        <div class="desc">of pot</div>
+      </div>
+      <div class="pot-cell first">
+        <div class="place">1st</div>
+        <div class="share">70%</div>
+        <div class="desc">of pot</div>
+      </div>
+    </div>
+    <div class="pot-total">Entry: <strong>&pound;10 / R240</strong> per manager &middot; fines for missed shot videos are added to the pot</div>
+  </section>
+
+  <section>
+    <div class="section-label">Rules</div>
+    <div class="rules-board">
+      <ul>
+        <li>Win the gameweek &rarr; nominate someone to take a double shot before the next gameweek.</li>
+        <li>Lose the gameweek &rarr; you take a double shot before the next gameweek.</li>
+        <li>Miss the deadline for your shot video &rarr; &pound;10/R240 fine into the pot, and the shot doubles again before the next gameweek.</li>
+        <li>Miss payment and shots before the next gameweek &rarr; you're out of the league.</li>
+      </ul>
+      <div class="entry-note">Entry: &pound;10 / R240 + one entry shot video, due before gameweek 1.</div>
+    </div>
+  </section>
+
+</main>
+
+<div class="modal-overlay" id="profile-modal" hidden>
+  <div class="modal-card">
+    <button class="modal-close" id="modal-close">&times;</button>
+    <div class="modal-eyebrow">Season shot count</div>
+    <div class="modal-name" id="modal-name">—</div>
+    <div class="modal-total" id="modal-total">—</div>
+    <div class="modal-breakdown" id="modal-breakdown"></div>
+  </div>
+</div>
+
+<details class="diagnostics" id="diagnostics">
+  <summary>Diagnostics — why isn't data showing?</summary>
+  <div class="diag-status" id="diag-status">Idle</div>
+  <div class="diag-log" id="diag-log">
+    <div class="diag-empty">No requests logged yet.</div>
+  </div>
+  <button class="diag-clear-btn" id="diag-copy-btn" style="margin-right:8px;">Copy log</button>
+  <button class="diag-clear-btn" id="diag-clear-btn">Clear log</button>
+</details>
+
+<footer>Powered by the Fantasy Premier League API</footer>
+
+<script>
+  const LEAGUE_ID = "627960";
+  const STANDINGS_URL = `https://fantasy.premierleague.com/api/leagues-classic/${LEAGUE_ID}/standings/`;
+  const BOOTSTRAP_URL = `https://fantasy.premierleague.com/api/bootstrap-static/`;
+  const SHOT_LOG_KEY = "shot-log-v1";
+
+  // Chain of CORS proxies — the FPL API doesn't send CORS headers itself,
+  // and any single free proxy can go down or rate-limit, so we try each
+  // in turn until one works.
+  const PROXY_BUILDERS = [
+    url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+    url => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url),
+    url => "https://proxy.corsfix.com/?" + url
+  ];
+
+  // ---- Shared storage (real, server-side — backed by a Netlify Function
+  // + Netlify Blobs, since window.storage only exists inside Claude's own
+  // artifact preview and does nothing on an externally-hosted page) ----
+  const remoteStorage = {
+    async get(key){
+      const res = await fetch(`/.netlify/functions/data?key=${encodeURIComponent(key)}`);
+      if(res.status === 404) return null;
+      if(!res.ok) throw new Error('Storage GET failed: ' + res.status);
+      return await res.json(); // { key, value }
+    },
+    async set(key, value){
+      const res = await fetch(`/.netlify/functions/data`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value })
+      });
+      if(!res.ok) throw new Error('Storage SET failed: ' + res.status);
+      return await res.json();
+    }
+  };
+
+  async function fetchJSON(url){
+    markRequestStart();
+    try{
+      let lastErr;
+      for(const buildProxyUrl of PROXY_BUILDERS){
+        const proxyUrl = buildProxyUrl(url);
+        try{
+          const res = await fetch(proxyUrl);
+          if(!res.ok){
+            logDiag({ ok:false, target:url, proxyUrl, detail: 'HTTP ' + res.status + ' ' + res.statusText });
+            throw new Error('Bad response: ' + res.status);
+          }
+          const data = await res.json();
+          logDiag({ ok:true, target:url, proxyUrl, detail: 'OK' });
+          return data;
+        }catch(err){
+          lastErr = err;
+          logDiag({ ok:false, target:url, proxyUrl, detail: (err && err.message) ? err.message : String(err) });
+          console.warn('Proxy failed, trying next…', err);
+        }
+      }
+      throw lastErr;
+    }finally{
+      markRequestEnd();
+    }
+  }
+
+  // ---- Diagnostics status line (Loading… / All requests complete) ----
+  let activeRequests = 0;
+  let diagCompleteTimer = null;
+
+  function setDiagStatus(state, label){
+    const el = document.getElementById('diag-status');
+    if(!el) return;
+    el.textContent = label;
+    el.className = 'diag-status ' + state;
+  }
+
+  function markRequestStart(){
+    activeRequests++;
+    if(diagCompleteTimer){ clearTimeout(diagCompleteTimer); diagCompleteTimer = null; }
+    setDiagStatus('loading', 'Loading…');
+  }
+
+  function markRequestEnd(){
+    activeRequests = Math.max(0, activeRequests - 1);
+    if(activeRequests === 0){
+      // Small debounce so a brief gap between batches doesn't flash
+      // "complete" and then immediately flip back to "loading".
+      diagCompleteTimer = setTimeout(() => {
+        if(activeRequests === 0) setDiagStatus('complete', 'All requests complete ✓');
+      }, 500);
+    }
+  }
+
+  // Runs `worker` over `items` in batches of `batchSize`, waiting
+  // `pauseMs` between batches — keeps us under free CORS proxies' rate
+  // limits instead of firing everything at once.
+  async function fetchInBatches(items, batchSize, pauseMs, worker){
+    const results = [];
+    for(let i = 0; i < items.length; i += batchSize){
+      const batch = items.slice(i, i + batchSize);
+      const batchResults = await Promise.all(batch.map(worker));
+      results.push(...batchResults);
+      if(i + batchSize < items.length){
+        await new Promise(resolve => setTimeout(resolve, pauseMs));
+      }
+    }
+    return results;
+  }
+
+  // ---- Diagnostics panel ----
+  let diagLog = [];
+
+  function logDiag(entry){
+    diagLog.unshift({ ...entry, time: new Date() });
+    if(diagLog.length > 60) diagLog.length = 60;
+    renderDiag();
+  }
+
+  function renderDiag(){
+    const el = document.getElementById('diag-log');
+    if(!el) return;
+    if(diagLog.length === 0){
+      el.innerHTML = '<div class="diag-empty">No requests logged yet.</div>';
+      return;
+    }
+    el.innerHTML = diagLog.map(e => {
+      const t = e.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      const proxyHost = (() => { try{ return new URL(e.proxyUrl.split('?')[0].split('/fetch/')[0]).hostname; }catch(_){ return e.proxyUrl.slice(0,40); } })();
+      return `<div class="diag-entry ${e.ok ? 'ok' : 'fail'}">`
+        + `<span class="diag-time">${t}</span>`
+        + `${e.ok ? '✓' : '✗'} ${escapeHtml(proxyHost)} → ${escapeHtml(e.target)}\n${escapeHtml(e.detail)}`
+        + `</div>`;
+    }).join('');
+  }
+
+  document.getElementById('diag-clear-btn').addEventListener('click', () => {
+    diagLog = [];
+    renderDiag();
+  });
+
+  function diagLogAsText(){
+    if(diagLog.length === 0) return 'No requests logged yet.';
+    return diagLog.map(e => {
+      const t = e.time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+      const proxyHost = (() => { try{ return new URL(e.proxyUrl.split('?')[0].split('/fetch/')[0]).hostname; }catch(_){ return e.proxyUrl.slice(0,40); } })();
+      return `${t} ${e.ok ? 'OK' : 'FAIL'} ${proxyHost} -> ${e.target}\n${e.detail}`;
+    }).join('\n\n');
+  }
+
+  document.getElementById('diag-copy-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('diag-copy-btn');
+    const text = diagLogAsText();
+    const flash = (label) => {
+      const original = btn.textContent;
+      btn.textContent = label;
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    };
+    try{
+      await navigator.clipboard.writeText(text);
+      flash('Copied ✓');
+    }catch(err){
+      // Fallback: select a hidden textarea so the user can Cmd/Ctrl+C manually
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try{
+        document.execCommand('copy');
+        flash('Copied ✓');
+      }catch(err2){
+        flash('Copy failed — select manually');
+      }
+      document.body.removeChild(ta);
+    }
+  });
+
+  let lastStandings = null;
+  let ALL_ENTRIES = [];
+  let currentWinners = [];
+  let currentLosers = [];
+  let CURRENT_GW = null;
+  let shotLog = [];
+
+  const CACHE_STANDINGS_KEY = "cache-standings-v1";
+  const CACHE_CURRENT_GW_KEY = "cache-current-gw-v1";
+  const CACHE_HISTORIES_KEY = "cache-histories-v1";
+
+  async function fetchStandings(){
+    const wrap = document.getElementById('standings-wrap');
+    wrap.innerHTML = '<div class="loading">Fetching live standings…</div>';
+    try{
+      const data = await fetchJSON(STANDINGS_URL);
+      lastStandings = data;
+      renderStandings(data);
+      document.getElementById('last-updated').textContent =
+        'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      try{
+        await remoteStorage.set(CACHE_STANDINGS_KEY, JSON.stringify({ data, ts: Date.now() }));
+      }catch(cacheErr){ console.warn('Could not cache standings', cacheErr); }
+    }catch(err){
+      console.error(err);
+      // All proxies failed this round — fall back to the last successful
+      // fetch (from this session, or shared storage from any league member)
+      // rather than showing a blank error when we have something to show.
+      let cached = null;
+      try{
+        const stored = await remoteStorage.get(CACHE_STANDINGS_KEY);
+        if(stored) cached = JSON.parse(stored.value);
+      }catch(cacheErr){ /* no cache available */ }
+      if(cached){
+        lastStandings = cached.data;
+        renderStandings(cached.data);
+        const ago = new Date(cached.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        document.getElementById('last-updated').textContent =
+          `Couldn't refresh — showing standings from ${ago}`;
+      }else{
+        wrap.innerHTML = '<div class="error-msg">Couldn\'t reach the FPL API right now. Hit refresh to try again.</div>';
+      }
+    }
+  }
+
+  function renderStandings(data){
+    document.getElementById('league-name').textContent = data.league.name;
+    const results = data.standings.results;
+    ALL_ENTRIES = results.map(r => ({ entry: r.entry, entry_name: r.entry_name, player_name: r.player_name }));
+
+    const highPts = Math.max(...results.map(r => r.event_total));
+    const lowPts = Math.min(...results.map(r => r.event_total));
+    currentWinners = results.filter(r => r.event_total === highPts);
+    currentLosers = results.filter(r => r.event_total === lowPts);
+
+    const table = document.createElement('table');
+    table.className = 'standings';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th style="width:34px">#</th>
+          <th>Team</th>
+          <th class="num">GW</th>
+          <th class="num">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${results.map(r => {
+          const moved = r.last_rank && r.last_rank !== r.rank
+            ? (r.last_rank > r.rank
+                ? `<span class="move up">&#9650;${r.last_rank - r.rank}</span>`
+                : `<span class="move down">&#9660;${r.rank - r.last_rank}</span>`)
+            : '';
+          let rowClass = '';
+          if(r.event_total === highPts) rowClass = 'row-winner';
+          else if(r.event_total === lowPts) rowClass = 'row-loser';
+          return `
+          <tr class="${rowClass}">
+            <td class="rank-cell">${r.rank}</td>
+            <td>
+              <div class="team-name clickable-name" data-entry="${r.entry}" data-name="${escapeHtml(r.entry_name)}">${escapeHtml(r.entry_name)} ${moved}</div>
+              <div class="manager-name">${escapeHtml(r.player_name)}</div>
+            </td>
+            <td class="num gw-pts">${r.event_total}</td>
+            <td class="num total-pts">${r.total}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    `;
+    const wrap = document.getElementById('standings-wrap');
+    wrap.innerHTML = '';
+    wrap.appendChild(table);
+    attachClickableNameHandlers(wrap);
+
+    // Gameweek winner(s) / loser(s) strip — handles ties
+    if(results.length){
+      const winners = currentWinners, losers = currentLosers;
+      document.getElementById('status-section').style.display = 'block';
+
+      document.getElementById('gw-winner-tag').textContent =
+        winners.length > 1 ? 'Tied — all nominate a shot' : 'Nominates the shot';
+      const winnerNameEl = document.getElementById('gw-winner-name');
+      winnerNameEl.textContent = winners.map(w => w.entry_name).join(' / ');
+      winnerNameEl.classList.toggle('multi', winners.length > 1);
+      document.getElementById('gw-winner-detail').textContent =
+        winners.map(w => `${w.player_name} · ${w.event_total} pts`).join(' · ');
+
+      document.getElementById('gw-loser-tag').textContent =
+        losers.length > 1 ? 'Tied — all owe a shot' : 'Owes a shot';
+      const loserNameEl = document.getElementById('gw-loser-name');
+      loserNameEl.textContent = losers.map(l => l.entry_name).join(' / ');
+      loserNameEl.classList.toggle('multi', losers.length > 1);
+      document.getElementById('gw-loser-detail').textContent =
+        losers.map(l => `${l.player_name} · ${l.event_total} pts`).join(' · ');
+    }
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  let isLoading = false;
+
+  document.getElementById('refresh-btn').addEventListener('click', () => {
+    init(true);
+  });
+  init(false);
+
+  async function init(forceLive){
+    if(isLoading) return; // a load is already running — ignore duplicate triggers
+    isLoading = true;
+    const btn = document.getElementById('refresh-btn');
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Loading…';
+    try{
+      if(!forceLive){
+        const hydrated = await tryHydrateFromCache();
+        if(hydrated){
+          await syncShotLog();
+          return;
+        }
+      }
+      await fetchStandings();
+      await fetchCurrentEvent();
+      await syncShotLog();
+      await buildBumpChart();
+    }finally{
+      isLoading = false;
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  // Tries to render the whole page from cached data with zero network
+  // calls. Returns true only if standings, current gameweek, and history
+  // data were all found in cache — otherwise falls through to a live
+  // fetch so a first-time visit (or partial cache) still works.
+  async function tryHydrateFromCache(){
+    let standingsCache = null, gwCache = null, historiesCache = null;
+    try{
+      const s = await remoteStorage.get(CACHE_STANDINGS_KEY);
+      if(s) standingsCache = JSON.parse(s.value);
+    }catch(e){ /* no cache */ }
+    try{
+      const g = await remoteStorage.get(CACHE_CURRENT_GW_KEY);
+      if(g) gwCache = parseInt(g.value, 10);
+    }catch(e){ /* no cache */ }
+    try{
+      const h = await remoteStorage.get(CACHE_HISTORIES_KEY);
+      if(h) historiesCache = JSON.parse(h.value);
+    }catch(e){ /* no cache */ }
+
+    if(!standingsCache || gwCache === null || isNaN(gwCache) || !historiesCache) return false;
+
+    lastStandings = standingsCache.data;
+    renderStandings(standingsCache.data);
+    CURRENT_GW = gwCache;
+    computeAndRenderBumpChart(historiesCache.histories);
+
+    const ago = new Date(standingsCache.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    document.getElementById('last-updated').textContent =
+      `Showing cached data from ${ago} — tap Refresh for live`;
+
+    return true;
+  }
+
+  // ---- Season Movement (bump chart) ----
+  const PALETTE = ['#e8a33d','#6fbf73','#7fb8e0','#c4759c','#e0763a','#9a8fd9',
+                   '#5fb8a8','#d9c25f','#a8283a','#6b9e5f','#c98f4a','#8f7fd9'];
+
+  async function buildBumpChart(){
+    const wrap = document.getElementById('bump-wrap');
+    try{
+      // Reuse the standings we already fetched in fetchStandings() instead
+      // of hitting the proxies again for the same data — fewer requests
+      // means fewer chances for a flaky proxy to fail.
+      if(!lastStandings) throw new Error('No standings available yet');
+      const entries = lastStandings.standings.results;
+
+      // Fetch each manager's history in small batches rather than all at
+      // once — free CORS proxies rate-limit hard, and 18+ simultaneous
+      // requests reliably trips that (even the reliable-looking ones).
+      const histories = await fetchInBatches(entries, 4, 250, async e => {
+        const url = `https://fantasy.premierleague.com/api/entry/${e.entry}/history/`;
+        const data = await fetchJSON(url);
+        return { entry: e.entry, entry_name: e.entry_name, player_name: e.player_name, current: data.current };
+      });
+
+      computeAndRenderBumpChart(histories);
+      try{
+        await remoteStorage.set(CACHE_HISTORIES_KEY, JSON.stringify({ histories, ts: Date.now() }));
+      }catch(cacheErr){ console.warn('Could not cache histories', cacheErr); }
+    }catch(err){
+      console.error(err);
+      let cached = null;
+      try{
+        const stored = await remoteStorage.get(CACHE_HISTORIES_KEY);
+        if(stored) cached = JSON.parse(stored.value);
+      }catch(cacheErr){ /* no cache available */ }
+      if(cached){
+        computeAndRenderBumpChart(cached.histories);
+      }else{
+        wrap.innerHTML = '<div class="error-msg">Couldn\'t build the movement chart right now.</div>';
+      }
+    }
+  }
+
+  function computeAndRenderBumpChart(histories){
+    const maxEvent = Math.max(...histories.flatMap(h => h.current.map(c => c.event)));
+    const events = [];
+    for(let ev = 1; ev <= maxEvent; ev++) events.push(ev);
+
+    // cumulative total points per entry per event
+    const totalsByEvent = {}; // event -> [{entry, total_points}]
+    events.forEach(ev => { totalsByEvent[ev] = []; });
+    histories.forEach(h => {
+      h.current.forEach(c => {
+        if(totalsByEvent[c.event]){
+          totalsByEvent[c.event].push({ entry: h.entry, total_points: c.total_points });
+        }
+      });
+    });
+
+    // rank per event — ties broken alphabetically by team name so
+    // tied entries get distinct chart positions instead of overlapping
+    const entryNameMap = {};
+    histories.forEach(h => { entryNameMap[h.entry] = h.entry_name; });
+
+    const ranks = {}; // entry -> { event: rank }
+    histories.forEach(h => { ranks[h.entry] = {}; });
+    events.forEach(ev => {
+      const rows = totalsByEvent[ev].slice().sort((a, b) => {
+        if(b.total_points !== a.total_points) return b.total_points - a.total_points;
+        return entryNameMap[a.entry].localeCompare(entryNameMap[b.entry]);
+      });
+      rows.forEach((row, i) => {
+        ranks[row.entry][ev] = i + 1;
+      });
+    });
+
+    renderBumpChart(histories, ranks, events);
+  }
+
+  function renderBumpChart(histories, ranks, events){
+    const wrap = document.getElementById('bump-wrap');
+    const n = histories.length;
+    if(n === 0 || events.length === 0){
+      wrap.innerHTML = '<div class="error-msg">Not enough gameweek history yet.</div>';
+      return;
+    }
+
+    const colWidth = 46;
+    const rowHeight = 26;
+    const leftPad = 26;
+    const rightPad = 130;
+    const topPad = 22;
+    const bottomPad = 4;
+
+    const width = leftPad + rightPad + (events.length - 1) * colWidth + colWidth;
+    const height = topPad + bottomPad + (n - 1) * rowHeight + rowHeight;
+
+    const xFor = (i) => leftPad + i * colWidth;
+    const yFor = (rank) => topPad + (rank - 1) * rowHeight;
+
+    let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+
+    // rank axis labels
+    for(let r = 1; r <= n; r++){
+      svg += `<text class="bump-rank-label" x="${leftPad - 8}" y="${yFor(r) + 4}">${r}</text>`;
+    }
+    // gameweek axis labels (every event, or thin out if many)
+    const step = events.length > 20 ? Math.ceil(events.length / 20) : 1;
+    events.forEach((ev, i) => {
+      if(ev % step === 0 || ev === 1 || ev === events.length){
+        svg += `<text class="bump-gw-label" x="${xFor(i)}" y="${topPad - 8}">GW${ev}</text>`;
+      }
+    });
+
+    // lines per manager
+    histories.forEach((h, idx) => {
+      const color = PALETTE[idx % PALETTE.length];
+      const points = events
+        .map((ev, i) => ranks[h.entry][ev] !== undefined ? `${xFor(i)},${yFor(ranks[h.entry][ev])}` : null)
+        .filter(Boolean)
+        .join(' ');
+      svg += `<polyline class="bump-line" points="${points}" stroke="${color}" />`;
+
+      events.forEach((ev, i) => {
+        if(ranks[h.entry][ev] !== undefined){
+          svg += `<circle class="bump-dot" cx="${xFor(i)}" cy="${yFor(ranks[h.entry][ev])}" r="3.2" fill="${color}" />`;
+        }
+      });
+
+      // end badge with initials + name
+      const lastEv = events[events.length - 1];
+      if(ranks[h.entry][lastEv] !== undefined){
+        const y = yFor(ranks[h.entry][lastEv]);
+        const initials = h.entry_name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        svg += `<circle class="bump-badge" cx="${xFor(events.length - 1) + 16}" cy="${y}" r="9" fill="${color}" />`;
+        svg += `<text x="${xFor(events.length - 1) + 16}" y="${y + 3}" text-anchor="middle" font-size="8.5" font-family="Oswald, sans-serif" font-weight="600" fill="#0b3d2e">${escapeHtmlAttr(initials)}</text>`;
+        svg += `<text class="bump-name-tag" x="${xFor(events.length - 1) + 28}" y="${y + 4}" fill="${color}">${escapeHtmlAttr(truncate(h.entry_name, 16))}</text>`;
+      }
+    });
+
+    svg += `</svg>`;
+
+    wrap.innerHTML = `<div class="bump-scroll">${svg}</div>`;
+
+    const legend = document.createElement('div');
+    legend.className = 'bump-legend';
+    legend.innerHTML = histories.map((h, idx) => `
+      <div class="bump-legend-item">
+        <span class="bump-legend-swatch" style="background:${PALETTE[idx % PALETTE.length]}"></span>
+        ${escapeHtmlAttr(h.entry_name)} <span style="opacity:0.5">· ${escapeHtmlAttr(h.player_name)}</span>
+      </div>
+    `).join('');
+    wrap.appendChild(legend);
+  }
+
+  function truncate(str, len){
+    return str.length > len ? str.slice(0, len - 1) + '…' : str;
+  }
+
+  function escapeHtmlAttr(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+
+  // ---- Shot Duty: current gameweek + persisted log ----
+
+  async function fetchCurrentEvent(){
+    try{
+      const data = await fetchJSON(BOOTSTRAP_URL);
+      const current = data.events.find(e => e.is_current)
+        || data.events.filter(e => e.finished).slice(-1)[0]
+        || data.events[0];
+      CURRENT_GW = current.id;
+      try{
+        await remoteStorage.set(CACHE_CURRENT_GW_KEY, String(CURRENT_GW));
+      }catch(cacheErr){ console.warn('Could not cache current gameweek', cacheErr); }
+    }catch(err){
+      console.error('Could not determine current gameweek, trying cache', err);
+      try{
+        const stored = await remoteStorage.get(CACHE_CURRENT_GW_KEY);
+        CURRENT_GW = stored ? parseInt(stored.value, 10) : null;
+      }catch(cacheErr){
+        CURRENT_GW = null;
+      }
+    }
+  }
+
+  async function loadShotLog(){
+    try{
+      const result = await remoteStorage.get(SHOT_LOG_KEY);
+      shotLog = result ? JSON.parse(result.value) : [];
+    }catch(err){
+      shotLog = [];
+    }
+  }
+
+  async function saveShotLog(){
+    try{
+      await remoteStorage.set(SHOT_LOG_KEY, JSON.stringify(shotLog));
+    }catch(err){
+      console.error('Could not save shot log', err);
+    }
+  }
+
+  async function syncShotLog(){
+    if(CURRENT_GW === null) return;
+    await loadShotLog();
+
+    const winners = currentWinners.map(w => ({ entry: w.entry, entry_name: w.entry_name, player_name: w.player_name }));
+    const losers = currentLosers.map(l => ({ entry: l.entry, entry_name: l.entry_name, player_name: l.player_name }));
+
+    let record = shotLog.find(r => r.event === CURRENT_GW);
+    if(!record){
+      const nominations = {};
+      winners.forEach(w => { nominations[w.entry] = null; });
+      record = { event: CURRENT_GW, winners, losers, nominations };
+      shotLog.push(record);
+    }else{
+      const nominations = {};
+      winners.forEach(w => { nominations[w.entry] = record.nominations[w.entry] || null; });
+      record.winners = winners;
+      record.losers = losers;
+      record.nominations = nominations;
+    }
+    shotLog.sort((a, b) => a.event - b.event);
+    await saveShotLog();
+    renderShotSection();
+  }
+
+  function renderShotSection(){
+    renderCurrentGwCard();
+    renderShotHistory();
+  }
+
+  function renderCurrentGwCard(){
+    const wrap = document.getElementById('shot-current-wrap');
+    const record = shotLog.find(r => r.event === CURRENT_GW);
+    if(!record){
+      wrap.innerHTML = '<div class="loading">No gameweek data yet.</div>';
+      return;
+    }
+
+    const loserHtml = record.losers.map(l =>
+      `<span class="loser-name clickable-name" data-entry="${l.entry}" data-name="${escapeHtml(l.entry_name)}">${escapeHtml(l.player_name)}</span>`
+    ).join(', ');
+
+    const nomSlotsHtml = record.winners.map(w => {
+      const nominee = record.nominations[w.entry];
+      const contenders = ALL_ENTRIES.filter(e => e.entry !== w.entry);
+      const dropdownHtml = contenders.map(c =>
+        `<div class="nom-option" data-winner="${w.entry}" data-entry="${c.entry}" data-name="${escapeHtml(c.entry_name)}">${escapeHtml(c.player_name)}</div>`
+      ).join('');
+
+      return `
+        <div class="nom-slot">
+          <div class="nom-winner-label">${escapeHtml(w.entry_name)} nominates</div>
+          ${nominee
+            ? `<button class="nominee-chosen" data-toggle-winner="${w.entry}">
+                 <span class="clickable-name" data-entry="${nominee.entry}" data-name="${escapeHtml(nominee.entry_name)}">${escapeHtml(nominee.player_name)}</span>
+                 <span class="change-link">Change</span>
+               </button>`
+            : `<button class="nom-select-btn" data-toggle-winner="${w.entry}">Select nominee</button>`
+          }
+          <div class="nom-dropdown" id="nom-dropdown-${w.entry}" hidden>${dropdownHtml}</div>
+        </div>`;
+    }).join('');
+
+    wrap.innerHTML = `
+      <div class="gw-record-card">
+        <div class="gw-record-head">Gameweek ${record.event}</div>
+        <div class="loser-row">
+          <span class="loser-tag">${record.losers.length > 1 ? 'Owe a shot' : 'Owes a shot'}</span>
+          ${loserHtml || '—'}
+        </div>
+        ${nomSlotsHtml}
+      </div>
+    `;
+
+    // toggle dropdowns
+    wrap.querySelectorAll('[data-toggle-winner]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        if(e.target.closest('.clickable-name')) return; // let name click open profile instead
+        const winnerEntry = btn.dataset.toggleWinner;
+        const dropdown = document.getElementById(`nom-dropdown-${winnerEntry}`);
+        const isHidden = dropdown.hasAttribute('hidden');
+        wrap.querySelectorAll('.nom-dropdown').forEach(d => d.setAttribute('hidden', ''));
+        if(isHidden) dropdown.removeAttribute('hidden');
+      });
+    });
+
+    // pick nominee
+    wrap.querySelectorAll('.nom-option').forEach(opt => {
+      opt.addEventListener('click', async () => {
+        const winnerEntry = opt.dataset.winner;
+        const nomineeEntry = parseInt(opt.dataset.entry, 10);
+        const nomineeName = opt.dataset.name;
+        const contender = ALL_ENTRIES.find(e => e.entry === nomineeEntry);
+        record.nominations[winnerEntry] = contender || { entry: nomineeEntry, entry_name: nomineeName, player_name: '' };
+        await saveShotLog();
+        renderShotSection();
+      });
+    });
+
+    attachClickableNameHandlers(wrap);
+  }
+
+  function renderShotHistory(){
+    const wrap = document.getElementById('shot-history-wrap');
+    const pastRecords = shotLog.filter(r => r.event !== CURRENT_GW).sort((a, b) => b.event - a.event);
+
+    if(pastRecords.length === 0){
+      wrap.innerHTML = '<div class="loading">No completed gameweeks logged yet.</div>';
+      return;
+    }
+
+    wrap.innerHTML = pastRecords.map(r => {
+      const loserNames = r.losers.map(l =>
+        `<span class="clickable-name" data-entry="${l.entry}" data-name="${escapeHtml(l.entry_name)}">${escapeHtml(l.player_name)}</span>`
+      ).join(', ');
+
+      const nomLines = r.winners.map(w => {
+        const nominee = r.nominations[w.entry];
+        const nomineeHtml = nominee
+          ? `<span class="clickable-name" data-entry="${nominee.entry}" data-name="${escapeHtml(nominee.entry_name)}">${escapeHtml(nominee.player_name)}</span>`
+          : '<span style="opacity:0.4">not set</span>';
+        return `<div><span class="lbl">${escapeHtml(w.entry_name)} nominated</span>${nomineeHtml}</div>`;
+      }).join('');
+
+      return `
+        <div class="history-row">
+          <div class="history-gw">GW${r.event}</div>
+          <div class="history-detail">
+            <div><span class="lbl">Lost</span>${loserNames}</div>
+            ${nomLines}
+          </div>
+        </div>`;
+    }).join('');
+
+    attachClickableNameHandlers(wrap);
+  }
+
+  function attachClickableNameHandlers(container){
+    container.querySelectorAll('.clickable-name').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openProfile(parseInt(el.dataset.entry, 10), el.dataset.name);
+      });
+    });
+  }
+
+  // ---- Profile modal ----
+  function openProfile(entryId, entryName){
+    const items = [];
+    shotLog.forEach(r => {
+      if(r.losers.some(l => l.entry === entryId)){
+        items.push({ event: r.event, type: 'Loss' });
+      }
+      Object.entries(r.nominations).forEach(([winnerEntry, nominee]) => {
+        if(nominee && nominee.entry === entryId){
+          const winner = r.winners.find(w => String(w.entry) === String(winnerEntry));
+          items.push({ event: r.event, type: 'Nominated', by: winner ? winner.entry_name : 'a winner' });
+        }
+      });
+    });
+    items.sort((a, b) => b.event - a.event);
+
+    document.getElementById('modal-name').textContent = entryName;
+    document.getElementById('modal-total').innerHTML = `<strong>${items.length}</strong> shot${items.length === 1 ? '' : 's'} this season`;
+
+    const breakdown = document.getElementById('modal-breakdown');
+    if(items.length === 0){
+      breakdown.innerHTML = '<div class="modal-empty">Clean sheet so far.</div>';
+    }else{
+      breakdown.innerHTML = items.map(it => `
+        <div class="b-row">
+          <span class="b-gw">GW${it.event}</span>
+          <span>${it.type === 'Loss' ? 'Lost the gameweek' : `Nominated by ${escapeHtml(it.by)}`}</span>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('profile-modal').removeAttribute('hidden');
+  }
+
+  document.getElementById('modal-close').addEventListener('click', () => {
+    document.getElementById('profile-modal').setAttribute('hidden', '');
+  });
+  document.getElementById('profile-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'profile-modal') e.currentTarget.setAttribute('hidden', '');
+  });
+</script>
+
+</body>
+</html>
