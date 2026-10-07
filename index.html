@@ -274,6 +274,38 @@
   .modal-breakdown .b-row:last-child{ border-bottom:none; }
   .modal-breakdown .b-gw{ color: rgba(244,239,228,0.45); flex-shrink:0; }
   .modal-empty{ font-size: 13px; color: rgba(244,239,228,0.4); text-align:center; padding: 10px 0; }
+  .modal-suspend-btn{
+    width:100%;
+    margin-top: 16px;
+    background: transparent;
+    border: 1px solid var(--claret-bright);
+    color: var(--claret-bright);
+    font-family:'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    cursor: pointer;
+  }
+  .modal-suspend-btn:hover{ background: rgba(168,40,58,0.1); }
+  .modal-suspend-btn.is-suspended{
+    border-color: #6fbf73;
+    color: #6fbf73;
+  }
+  .modal-suspend-btn.is-suspended:hover{ background: rgba(111,191,115,0.1); }
+  .suspended-tag{
+    display:inline-block;
+    font-family:'Oswald', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--claret-bright);
+    border: 1px solid var(--claret-bright);
+    padding: 1px 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+    opacity: 0.85;
+  }
 
   /* ---- Add/Edit gameweek modal ---- */
   .gw-edit-card{ max-width: 420px; max-height: 88vh; overflow-y: auto; }
@@ -604,6 +636,7 @@
     <div class="modal-name" id="modal-name">—</div>
     <div class="modal-total" id="modal-total">—</div>
     <div class="modal-breakdown" id="modal-breakdown"></div>
+    <button class="modal-suspend-btn" id="modal-suspend-btn"></button>
   </div>
 </div>
 
@@ -812,6 +845,38 @@
   let currentLosers = [];
   let CURRENT_GW = null;
   let shotLog = [];
+  let SUSPENDED_IDS = new Set();
+  let currentModalEntry = null;
+
+  const SUSPENDED_KEY = "suspended-entries-v1";
+
+  async function loadSuspended(){
+    try{
+      const result = await remoteStorage.get(SUSPENDED_KEY);
+      SUSPENDED_IDS = new Set(result ? JSON.parse(result.value) : []);
+    }catch(err){
+      SUSPENDED_IDS = new Set();
+    }
+  }
+
+  async function saveSuspended(){
+    try{
+      await remoteStorage.set(SUSPENDED_KEY, JSON.stringify(Array.from(SUSPENDED_IDS)));
+    }catch(err){
+      console.error('Could not save suspended list', err);
+    }
+  }
+
+  // Suspending/reinstating changes who's eligible to nominate or drink, so
+  // both the standings view (winner/loser highlighting) and the live shot
+  // log for the current gameweek need to be recomputed immediately.
+  async function toggleSuspended(entryId){
+    if(SUSPENDED_IDS.has(entryId)) SUSPENDED_IDS.delete(entryId);
+    else SUSPENDED_IDS.add(entryId);
+    await saveSuspended();
+    if(lastStandings) renderStandings(lastStandings);
+    await syncShotLog();
+  }
 
   const CACHE_STANDINGS_KEY = "cache-standings-v1";
   const CACHE_CURRENT_GW_KEY = "cache-current-gw-v1";
@@ -853,10 +918,14 @@
     const results = data.standings.results;
     ALL_ENTRIES = results.map(r => ({ entry: r.entry, entry_name: r.entry_name, player_name: r.player_name }));
 
-    const highPts = Math.max(...results.map(r => r.event_total));
-    const lowPts = Math.min(...results.map(r => r.event_total));
-    currentWinners = results.filter(r => r.event_total === highPts);
-    currentLosers = results.filter(r => r.event_total === lowPts);
+    // Suspended managers stay on the board but are skipped when working out
+    // who nominates/drinks — duty rolls to the next eligible score instead.
+    const eligible = results.filter(r => !SUSPENDED_IDS.has(r.entry));
+    const pool = eligible.length > 0 ? eligible : results;
+    const highPts = Math.max(...pool.map(r => r.event_total));
+    const lowPts = Math.min(...pool.map(r => r.event_total));
+    currentWinners = pool.filter(r => r.event_total === highPts);
+    currentLosers = pool.filter(r => r.event_total === lowPts);
 
     const table = document.createElement('table');
     table.className = 'standings';
@@ -876,14 +945,16 @@
                 ? `<span class="move up">&#9650;${r.last_rank - r.rank}</span>`
                 : `<span class="move down">&#9660;${r.rank - r.last_rank}</span>`)
             : '';
+          const isSuspended = SUSPENDED_IDS.has(r.entry);
           let rowClass = '';
-          if(r.event_total === highPts) rowClass = 'row-winner';
-          else if(r.event_total === lowPts) rowClass = 'row-loser';
+          if(!isSuspended && r.event_total === highPts) rowClass = 'row-winner';
+          else if(!isSuspended && r.event_total === lowPts) rowClass = 'row-loser';
+          const suspendedTag = isSuspended ? '<span class="suspended-tag">Suspended</span>' : '';
           return `
           <tr class="${rowClass}">
             <td class="rank-cell">${r.rank}</td>
             <td>
-              <div class="team-name clickable-name" data-entry="${r.entry}" data-name="${escapeHtml(r.entry_name)}">${escapeHtml(r.entry_name)} ${moved}</div>
+              <div class="team-name clickable-name" data-entry="${r.entry}" data-name="${escapeHtml(r.entry_name)}">${escapeHtml(r.entry_name)} ${moved}${suspendedTag}</div>
               <div class="manager-name">${escapeHtml(r.player_name)}</div>
             </td>
             <td class="num gw-pts">${r.event_total}</td>
@@ -940,6 +1011,7 @@
     btn.disabled = true;
     btn.textContent = 'Loading…';
     try{
+      await loadSuspended();
       if(!forceLive){
         const hydrated = await tryHydrateFromCache();
         if(hydrated){
@@ -1329,6 +1401,7 @@
   }
 
   function openProfile(entryId, entryName){
+    currentModalEntry = entryId;
     const items = [];
     shotLog.forEach(r => {
       if(r.losers.some(l => l.entry === entryId)){
@@ -1358,14 +1431,29 @@
       `).join('');
     }
 
+    const suspendBtn = document.getElementById('modal-suspend-btn');
+    const isSuspended = SUSPENDED_IDS.has(entryId);
+    suspendBtn.textContent = isSuspended ? 'Reinstate into the league' : 'Suspend from nominating/drinking';
+    suspendBtn.classList.toggle('is-suspended', isSuspended);
+
     document.getElementById('profile-modal').removeAttribute('hidden');
   }
 
   document.getElementById('modal-close').addEventListener('click', () => {
     document.getElementById('profile-modal').setAttribute('hidden', '');
+    currentModalEntry = null;
   });
   document.getElementById('profile-modal').addEventListener('click', (e) => {
-    if(e.target.id === 'profile-modal') e.currentTarget.setAttribute('hidden', '');
+    if(e.target.id === 'profile-modal'){
+      e.currentTarget.setAttribute('hidden', '');
+      currentModalEntry = null;
+    }
+  });
+  document.getElementById('modal-suspend-btn').addEventListener('click', async () => {
+    if(currentModalEntry === null) return;
+    const name = document.getElementById('modal-name').textContent;
+    await toggleSuspended(currentModalEntry);
+    openProfile(currentModalEntry, name);
   });
 
   // ---- Add / edit a gameweek's shot record manually ----
