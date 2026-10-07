@@ -26,8 +26,6 @@
     min-height: 100vh;
     padding: 0 0 60px 0;
   }
-
-  /* ---- Header: matchday programme masthead ---- */
   header{
     border-bottom: 3px solid var(--amber);
     padding: 28px 24px 22px;
@@ -56,9 +54,7 @@
     margin-top: 10px;
     letter-spacing: 0.04em;
   }
-
   main{ max-width: 780px; margin: 0 auto; padding: 0 18px; }
-
   section{ margin-top: 40px; }
   .section-label{
     font-family:'Oswald', sans-serif;
@@ -77,8 +73,6 @@
     height:1px;
     background: var(--line);
   }
-
-  /* ---- Scoreboard status strip ---- */
   .status-strip{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -112,8 +106,6 @@
     margin-top: 4px;
     line-height: 1.5;
   }
-
-  /* ---- Standings: flip-scoreboard style table ---- */
   table{ width:100%; border-collapse: collapse; }
   .standings th{
     font-family:'Oswald', sans-serif;
@@ -149,8 +141,6 @@
   .manager-name{ font-size:12px; color: rgba(244,239,228,0.5); }
   .gw-pts{ font-family:'Oswald', sans-serif; font-weight:600; }
   .total-pts{ font-family:'Archivo Black', sans-serif; font-size: 15px; }
-
-  /* ---- Shot Duty ---- */
   .section-intro{
     font-size: 13px;
     color: rgba(244,239,228,0.65);
@@ -224,12 +214,12 @@
   }
   .nom-option:last-child{ border-bottom:none; }
   .nom-option:hover{ background: rgba(232,163,61,0.1); color: var(--amber); }
-
   .history-row{
     display:flex; gap: 12px;
     padding: 12px 0;
     border-bottom: 1px solid var(--line);
     font-size: 13px;
+    align-items: flex-start;
   }
   .history-row:last-child{ border-bottom:none; }
   .history-gw{
@@ -243,8 +233,6 @@
   .history-detail{ flex:1; line-height:1.7; color: rgba(244,239,228,0.8); }
   .history-detail .lbl{ color: rgba(244,239,228,0.4); font-size: 10px; text-transform:uppercase; letter-spacing:0.06em; margin-right: 5px; }
   .history-detail div{ margin-bottom: 2px; }
-
-  /* ---- Profile modal ---- */
   .modal-overlay{
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.6);
@@ -287,7 +275,56 @@
   .modal-breakdown .b-gw{ color: rgba(244,239,228,0.45); flex-shrink:0; }
   .modal-empty{ font-size: 13px; color: rgba(244,239,228,0.4); text-align:center; padding: 10px 0; }
 
-  /* ---- Prize pot ---- */
+  /* ---- Add/Edit gameweek modal ---- */
+  .gw-edit-card{ max-width: 420px; max-height: 88vh; overflow-y: auto; }
+  .gw-edit-field{ margin-bottom: 16px; }
+  .gw-edit-label{
+    display:block; font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing:0.12em; text-transform:uppercase;
+    color: rgba(244,239,228,0.5); margin-bottom: 8px;
+  }
+  .gw-edit-input{
+    width:100%; background: var(--pitch); border: 1px solid var(--line); color: var(--chalk);
+    font-family:'Inter', sans-serif; font-size: 14px; padding: 9px 10px;
+  }
+  .gw-edit-input:focus{ outline:none; border-color: var(--amber); }
+  .gw-edit-input:disabled{ opacity:0.5; }
+  .gw-edit-checklist{
+    max-height: 170px; overflow-y:auto; border: 1px solid var(--line); background: var(--pitch);
+  }
+  .gw-edit-check-row{
+    display:flex; align-items:center; gap:8px; padding: 9px 10px; font-size: 13px; cursor:pointer;
+  }
+  .gw-edit-losers .gw-edit-check-row{ border-bottom: 1px solid var(--line); }
+  .gw-edit-losers .gw-edit-check-row:last-child{ border-bottom:none; }
+  .gw-edit-winner-row{ border-bottom: 1px solid var(--line); }
+  .gw-edit-winner-row:last-child{ border-bottom:none; }
+  .gw-nominee-select{
+    width: calc(100% - 20px); margin: 0 10px 9px; background: var(--pitch-dark); border: 1px solid var(--line);
+    color: var(--chalk); font-family:'Inter', sans-serif; font-size: 12.5px; padding: 7px 8px;
+  }
+  .gw-nominee-select:disabled{ opacity:0.35; }
+  .gw-edit-actions{
+    display:flex; justify-content: space-between; align-items:center; margin-top: 18px; gap: 10px;
+  }
+  .gw-edit-save-btn{
+    background: var(--amber); border:none; color: var(--pitch-dark);
+    font-family:'Oswald', sans-serif; font-size: 12px; font-weight:600; letter-spacing: 0.08em; text-transform:uppercase;
+    padding: 10px 18px; cursor:pointer; margin-left:auto;
+  }
+  .gw-edit-save-btn:hover{ opacity:0.9; }
+  .gw-edit-delete-btn{
+    background: transparent; border: 1px solid var(--claret-bright); color: var(--claret-bright);
+    font-family:'Oswald', sans-serif; font-size: 11px; letter-spacing: 0.06em; text-transform:uppercase;
+    padding: 9px 14px; cursor:pointer;
+  }
+  .gw-edit-delete-btn:hover{ background: rgba(168,40,58,0.1); }
+  .history-edit-btn{
+    background: transparent; border: 1px solid var(--line); color: rgba(244,239,228,0.5);
+    font-family:'Oswald', sans-serif; font-size: 10px; letter-spacing: 0.06em; text-transform:uppercase;
+    padding: 5px 10px; cursor:pointer; flex-shrink:0;
+  }
+  .history-edit-btn:hover{ border-color: var(--amber); color: var(--amber); }
+
   .pot-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:1px; background: var(--line); border:1px solid var(--line);}
   .pot-cell{ background: var(--pitch-dark); padding: 20px 14px; text-align:center; }
   .pot-cell .place{ font-family:'Oswald', sans-serif; font-size: 11px; letter-spacing:0.2em; color: rgba(244,239,228,0.5); text-transform:uppercase;}
@@ -299,8 +336,6 @@
     font-family:'Oswald', sans-serif; letter-spacing: 0.05em;
   }
   .pot-total strong{ color: var(--chalk); }
-
-  /* ---- Rules notice board ---- */
   .rules-board{
     border: 1px solid var(--line);
     background: var(--pitch-dark);
@@ -329,7 +364,6 @@
     font-family:'Oswald', sans-serif;
     letter-spacing: 0.03em;
   }
-
   .loading, .error-msg{
     font-family:'Oswald', sans-serif;
     font-size: 13px;
@@ -338,8 +372,6 @@
     text-align:center;
   }
   .error-msg{ color: var(--claret-bright); }
-
-  /* ---- Bump chart ---- */
   .bump-scroll{
     overflow-x: auto;
     overflow-y: hidden;
@@ -397,7 +429,6 @@
   .refresh-btn:hover{ border-color: var(--amber); color: var(--amber); }
   .refresh-btn:disabled{ opacity: 0.5; cursor: default; border-color: var(--line); color: var(--chalk); }
   .last-updated{ font-size: 11px; color: rgba(244,239,228,0.4); }
-
   footer{
     text-align:center;
     margin-top: 50px;
@@ -407,7 +438,6 @@
     text-transform: uppercase;
     color: rgba(244,239,228,0.3);
   }
-
   .diagnostics{
     margin: 40px 24px 0;
     border: 1px dashed var(--line);
@@ -458,7 +488,6 @@
     padding: 5px 10px; cursor: pointer; margin-top: 10px;
   }
   .diag-clear-btn:hover{ border-color: var(--amber); color: var(--amber); }
-
   @media (max-width: 480px){
     .status-strip{ grid-template-columns: 1fr; }
     .pot-grid{ grid-template-columns: 1fr; }
@@ -522,8 +551,11 @@
   </section>
 
   <section>
-    <div class="section-label">Shot History</div>
-    <div id="shot-history-wrap">
+    <div class="refresh-row">
+      <div class="section-label" style="margin-bottom:0; flex:1;">Shot History</div>
+      <button class="refresh-btn" id="add-gw-btn">+ Add gameweek</button>
+    </div>
+    <div id="shot-history-wrap" style="margin-top:14px;">
       <div class="loading">Loading history…</div>
     </div>
   </section>
@@ -575,6 +607,29 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="gw-edit-modal" hidden>
+  <div class="modal-card gw-edit-card">
+    <button class="modal-close" id="gw-edit-close">&times;</button>
+    <div class="modal-eyebrow" id="gw-edit-title">Add a gameweek</div>
+    <div class="gw-edit-field">
+      <label class="gw-edit-label" for="gw-edit-event">Gameweek number</label>
+      <input type="number" id="gw-edit-event" class="gw-edit-input" min="1" placeholder="e.g. 3">
+    </div>
+    <div class="gw-edit-field">
+      <label class="gw-edit-label">Who lost / drank that week</label>
+      <div class="gw-edit-checklist gw-edit-losers" id="gw-edit-losers"></div>
+    </div>
+    <div class="gw-edit-field">
+      <label class="gw-edit-label">Who won (and who they nominated)</label>
+      <div class="gw-edit-checklist" id="gw-edit-winners"></div>
+    </div>
+    <div class="gw-edit-actions">
+      <button class="gw-edit-delete-btn" id="gw-edit-delete" style="display:none;">Delete entry</button>
+      <button class="gw-edit-save-btn" id="gw-edit-save">Save</button>
+    </div>
+  </div>
+</div>
+
 <details class="diagnostics" id="diagnostics">
   <summary>Diagnostics — why isn't data showing?</summary>
   <div class="diag-status" id="diag-status">Idle</div>
@@ -593,9 +648,6 @@
   const BOOTSTRAP_URL = `https://fantasy.premierleague.com/api/bootstrap-static/`;
   const SHOT_LOG_KEY = "shot-log-v1";
 
-  // Chain of CORS proxies — the FPL API doesn't send CORS headers itself,
-  // and any single free proxy can go down or rate-limit, so we try each
-  // in turn until one works.
   const PROXY_BUILDERS = [
     url => "/.netlify/functions/fpl-proxy?url=" + encodeURIComponent(url),
     url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
@@ -603,15 +655,12 @@
     url => "https://proxy.corsfix.com/?" + url
   ];
 
-  // ---- Shared storage (real, server-side — backed by a Netlify Function
-  // + Netlify Blobs, since window.storage only exists inside Claude's own
-  // artifact preview and does nothing on an externally-hosted page) ----
   const remoteStorage = {
     async get(key){
       const res = await fetch(`/.netlify/functions/data?key=${encodeURIComponent(key)}`);
       if(res.status === 404) return null;
       if(!res.ok) throw new Error('Storage GET failed: ' + res.status);
-      return await res.json(); // { key, value }
+      return await res.json();
     },
     async set(key, value){
       const res = await fetch(`/.netlify/functions/data`, {
@@ -651,7 +700,6 @@
     }
   }
 
-  // ---- Diagnostics status line (Loading… / All requests complete) ----
   let activeRequests = 0;
   let diagCompleteTimer = null;
 
@@ -671,17 +719,12 @@
   function markRequestEnd(){
     activeRequests = Math.max(0, activeRequests - 1);
     if(activeRequests === 0){
-      // Small debounce so a brief gap between batches doesn't flash
-      // "complete" and then immediately flip back to "loading".
       diagCompleteTimer = setTimeout(() => {
         if(activeRequests === 0) setDiagStatus('complete', 'All requests complete ✓');
       }, 500);
     }
   }
 
-  // Runs `worker` over `items` in batches of `batchSize`, waiting
-  // `pauseMs` between batches — keeps us under free CORS proxies' rate
-  // limits instead of firing everything at once.
   async function fetchInBatches(items, batchSize, pauseMs, worker){
     const results = [];
     for(let i = 0; i < items.length; i += batchSize){
@@ -695,7 +738,6 @@
     return results;
   }
 
-  // ---- Diagnostics panel ----
   let diagLog = [];
 
   function logDiag(entry){
@@ -747,7 +789,6 @@
       await navigator.clipboard.writeText(text);
       flash('Copied ✓');
     }catch(err){
-      // Fallback: select a hidden textarea so the user can Cmd/Ctrl+C manually
       const ta = document.createElement('textarea');
       ta.value = text;
       ta.style.position = 'fixed';
@@ -790,14 +831,11 @@
       }catch(cacheErr){ console.warn('Could not cache standings', cacheErr); }
     }catch(err){
       console.error(err);
-      // All proxies failed this round — fall back to the last successful
-      // fetch (from this session, or shared storage from any league member)
-      // rather than showing a blank error when we have something to show.
       let cached = null;
       try{
         const stored = await remoteStorage.get(CACHE_STANDINGS_KEY);
         if(stored) cached = JSON.parse(stored.value);
-      }catch(cacheErr){ /* no cache available */ }
+      }catch(cacheErr){ }
       if(cached){
         lastStandings = cached.data;
         renderStandings(cached.data);
@@ -859,7 +897,6 @@
     wrap.appendChild(table);
     attachClickableNameHandlers(wrap);
 
-    // Gameweek winner(s) / loser(s) strip — handles ties
     if(results.length){
       const winners = currentWinners, losers = currentLosers;
       document.getElementById('status-section').style.display = 'block';
@@ -896,7 +933,7 @@
   init(false);
 
   async function init(forceLive){
-    if(isLoading) return; // a load is already running — ignore duplicate triggers
+    if(isLoading) return;
     isLoading = true;
     const btn = document.getElementById('refresh-btn');
     const originalLabel = btn.textContent;
@@ -921,24 +958,20 @@
     }
   }
 
-  // Tries to render the whole page from cached data with zero network
-  // calls. Returns true only if standings, current gameweek, and history
-  // data were all found in cache — otherwise falls through to a live
-  // fetch so a first-time visit (or partial cache) still works.
   async function tryHydrateFromCache(){
     let standingsCache = null, gwCache = null, historiesCache = null;
     try{
       const s = await remoteStorage.get(CACHE_STANDINGS_KEY);
       if(s) standingsCache = JSON.parse(s.value);
-    }catch(e){ /* no cache */ }
+    }catch(e){ }
     try{
       const g = await remoteStorage.get(CACHE_CURRENT_GW_KEY);
       if(g) gwCache = parseInt(g.value, 10);
-    }catch(e){ /* no cache */ }
+    }catch(e){ }
     try{
       const h = await remoteStorage.get(CACHE_HISTORIES_KEY);
       if(h) historiesCache = JSON.parse(h.value);
-    }catch(e){ /* no cache */ }
+    }catch(e){ }
 
     if(!standingsCache || gwCache === null || isNaN(gwCache) || !historiesCache) return false;
 
@@ -954,22 +987,15 @@
     return true;
   }
 
-  // ---- Season Movement (bump chart) ----
   const PALETTE = ['#e8a33d','#6fbf73','#7fb8e0','#c4759c','#e0763a','#9a8fd9',
                    '#5fb8a8','#d9c25f','#a8283a','#6b9e5f','#c98f4a','#8f7fd9'];
 
   async function buildBumpChart(){
     const wrap = document.getElementById('bump-wrap');
     try{
-      // Reuse the standings we already fetched in fetchStandings() instead
-      // of hitting the proxies again for the same data — fewer requests
-      // means fewer chances for a flaky proxy to fail.
       if(!lastStandings) throw new Error('No standings available yet');
       const entries = lastStandings.standings.results;
 
-      // Fetch each manager's history in small batches rather than all at
-      // once — free CORS proxies rate-limit hard, and 18+ simultaneous
-      // requests reliably trips that (even the reliable-looking ones).
       const histories = await fetchInBatches(entries, 4, 250, async e => {
         const url = `https://fantasy.premierleague.com/api/entry/${e.entry}/history/`;
         const data = await fetchJSON(url);
@@ -986,7 +1012,7 @@
       try{
         const stored = await remoteStorage.get(CACHE_HISTORIES_KEY);
         if(stored) cached = JSON.parse(stored.value);
-      }catch(cacheErr){ /* no cache available */ }
+      }catch(cacheErr){ }
       if(cached){
         computeAndRenderBumpChart(cached.histories);
       }else{
@@ -1000,8 +1026,7 @@
     const events = [];
     for(let ev = 1; ev <= maxEvent; ev++) events.push(ev);
 
-    // cumulative total points per entry per event
-    const totalsByEvent = {}; // event -> [{entry, total_points}]
+    const totalsByEvent = {};
     events.forEach(ev => { totalsByEvent[ev] = []; });
     histories.forEach(h => {
       h.current.forEach(c => {
@@ -1011,12 +1036,10 @@
       });
     });
 
-    // rank per event — ties broken alphabetically by team name so
-    // tied entries get distinct chart positions instead of overlapping
     const entryNameMap = {};
     histories.forEach(h => { entryNameMap[h.entry] = h.entry_name; });
 
-    const ranks = {}; // entry -> { event: rank }
+    const ranks = {};
     histories.forEach(h => { ranks[h.entry] = {}; });
     events.forEach(ev => {
       const rows = totalsByEvent[ev].slice().sort((a, b) => {
@@ -1054,11 +1077,9 @@
 
     let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
 
-    // rank axis labels
     for(let r = 1; r <= n; r++){
       svg += `<text class="bump-rank-label" x="${leftPad - 8}" y="${yFor(r) + 4}">${r}</text>`;
     }
-    // gameweek axis labels (every event, or thin out if many)
     const step = events.length > 20 ? Math.ceil(events.length / 20) : 1;
     events.forEach((ev, i) => {
       if(ev % step === 0 || ev === 1 || ev === events.length){
@@ -1066,7 +1087,6 @@
       }
     });
 
-    // lines per manager
     histories.forEach((h, idx) => {
       const color = PALETTE[idx % PALETTE.length];
       const points = events
@@ -1081,7 +1101,6 @@
         }
       });
 
-      // end badge with initials + name
       const lastEv = events[events.length - 1];
       if(ranks[h.entry][lastEv] !== undefined){
         const y = yFor(ranks[h.entry][lastEv]);
@@ -1116,9 +1135,6 @@
     div.textContent = str;
     return div.innerHTML;
   }
-
-
-  // ---- Shot Duty: current gameweek + persisted log ----
 
   async function fetchCurrentEvent(){
     try{
@@ -1232,10 +1248,9 @@
       </div>
     `;
 
-    // toggle dropdowns
     wrap.querySelectorAll('[data-toggle-winner]').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        if(e.target.closest('.clickable-name')) return; // let name click open profile instead
+        if(e.target.closest('.clickable-name')) return;
         const winnerEntry = btn.dataset.toggleWinner;
         const dropdown = document.getElementById(`nom-dropdown-${winnerEntry}`);
         const isHidden = dropdown.hasAttribute('hidden');
@@ -1244,7 +1259,6 @@
       });
     });
 
-    // pick nominee
     wrap.querySelectorAll('.nom-option').forEach(opt => {
       opt.addEventListener('click', async () => {
         const winnerEntry = opt.dataset.winner;
@@ -1283,14 +1297,24 @@
       }).join('');
 
       return `
-        <div class="history-row">
+        <div class="history-row" data-event="${r.event}">
           <div class="history-gw">GW${r.event}</div>
           <div class="history-detail">
-            <div><span class="lbl">Lost</span>${loserNames}</div>
+            <div><span class="lbl">Lost</span>${loserNames || '—'}</div>
             ${nomLines}
           </div>
+          <button class="history-edit-btn" data-event="${r.event}" title="Edit this gameweek">Edit</button>
         </div>`;
     }).join('');
+
+    wrap.querySelectorAll('.history-edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const ev = parseInt(btn.dataset.event, 10);
+        const record = shotLog.find(r => r.event === ev);
+        if(record) openGwEditModal(record);
+      });
+    });
 
     attachClickableNameHandlers(wrap);
   }
@@ -1304,7 +1328,6 @@
     });
   }
 
-  // ---- Profile modal ----
   function openProfile(entryId, entryName){
     const items = [];
     shotLog.forEach(r => {
@@ -1344,6 +1367,128 @@
   document.getElementById('profile-modal').addEventListener('click', (e) => {
     if(e.target.id === 'profile-modal') e.currentTarget.setAttribute('hidden', '');
   });
+
+  // ---- Add / edit a gameweek's shot record manually ----
+  let editingEvent = null;
+
+  function openGwEditModal(record){
+    editingEvent = record ? record.event : null;
+    document.getElementById('gw-edit-title').textContent = record ? `Edit Gameweek ${record.event}` : 'Add a gameweek';
+    const eventInput = document.getElementById('gw-edit-event');
+    eventInput.value = record ? record.event : '';
+    eventInput.disabled = !!record;
+    document.getElementById('gw-edit-delete').style.display = record ? 'inline-block' : 'none';
+    populateGwEditChecklists(record);
+    document.getElementById('gw-edit-modal').removeAttribute('hidden');
+  }
+
+  function closeGwEditModal(){
+    document.getElementById('gw-edit-modal').setAttribute('hidden', '');
+    editingEvent = null;
+  }
+
+  function populateGwEditChecklists(record){
+    const losersWrap = document.getElementById('gw-edit-losers');
+    const winnersWrap = document.getElementById('gw-edit-winners');
+
+    const loserIds = new Set((record ? record.losers : []).map(l => l.entry));
+    const winnerIds = new Set((record ? record.winners : []).map(w => w.entry));
+    const nominations = record ? record.nominations : {};
+
+    losersWrap.innerHTML = ALL_ENTRIES.map(e => `
+      <label class="gw-edit-check-row">
+        <input type="checkbox" class="gw-loser-check" value="${e.entry}" ${loserIds.has(e.entry) ? 'checked' : ''}>
+        <span>${escapeHtml(e.entry_name)}</span>
+      </label>
+    `).join('');
+
+    winnersWrap.innerHTML = ALL_ENTRIES.map(e => {
+      const isWinner = winnerIds.has(e.entry);
+      const nominee = nominations[e.entry];
+      const options = ALL_ENTRIES.filter(x => x.entry !== e.entry).map(x =>
+        `<option value="${x.entry}" ${nominee && nominee.entry === x.entry ? 'selected' : ''}>${escapeHtml(x.entry_name)}</option>`
+      ).join('');
+      return `
+        <div class="gw-edit-winner-row" data-entry="${e.entry}">
+          <label class="gw-edit-check-row">
+            <input type="checkbox" class="gw-winner-check" value="${e.entry}" ${isWinner ? 'checked' : ''}>
+            <span>${escapeHtml(e.entry_name)}</span>
+          </label>
+          <select class="gw-nominee-select" data-winner="${e.entry}" ${isWinner ? '' : 'disabled'}>
+            <option value="">Nominee…</option>
+            ${options}
+          </select>
+        </div>
+      `;
+    }).join('');
+
+    winnersWrap.querySelectorAll('.gw-winner-check').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const row = cb.closest('.gw-edit-winner-row');
+        const select = row.querySelector('.gw-nominee-select');
+        select.disabled = !cb.checked;
+        if(!cb.checked) select.value = '';
+      });
+    });
+  }
+
+  async function saveGwEditRecord(){
+    const eventInput = document.getElementById('gw-edit-event');
+    const eventNum = editingEvent !== null ? editingEvent : parseInt(eventInput.value, 10);
+    if(!eventNum || eventNum < 1){
+      eventInput.focus();
+      return;
+    }
+
+    const losersWrap = document.getElementById('gw-edit-losers');
+    const winnersWrap = document.getElementById('gw-edit-winners');
+
+    const losers = Array.from(losersWrap.querySelectorAll('.gw-loser-check:checked')).map(cb => {
+      const id = parseInt(cb.value, 10);
+      return ALL_ENTRIES.find(e => e.entry === id);
+    }).filter(Boolean);
+
+    const winnerChecks = Array.from(winnersWrap.querySelectorAll('.gw-winner-check:checked'));
+    const winners = [];
+    const nominations = {};
+    winnerChecks.forEach(cb => {
+      const id = parseInt(cb.value, 10);
+      const entryObj = ALL_ENTRIES.find(e => e.entry === id);
+      if(!entryObj) return;
+      winners.push(entryObj);
+      const select = winnersWrap.querySelector(`.gw-nominee-select[data-winner="${id}"]`);
+      const nomineeId = select && select.value ? parseInt(select.value, 10) : null;
+      nominations[id] = nomineeId ? (ALL_ENTRIES.find(e => e.entry === nomineeId) || null) : null;
+    });
+
+    const existingIdx = shotLog.findIndex(r => r.event === eventNum);
+    const record = { event: eventNum, losers, winners, nominations };
+    if(existingIdx >= 0){
+      shotLog[existingIdx] = record;
+    }else{
+      shotLog.push(record);
+    }
+    shotLog.sort((a, b) => a.event - b.event);
+    await saveShotLog();
+    renderShotSection();
+    closeGwEditModal();
+  }
+
+  async function deleteGwEditRecord(){
+    if(editingEvent === null) return;
+    shotLog = shotLog.filter(r => r.event !== editingEvent);
+    await saveShotLog();
+    renderShotSection();
+    closeGwEditModal();
+  }
+
+  document.getElementById('add-gw-btn').addEventListener('click', () => openGwEditModal(null));
+  document.getElementById('gw-edit-close').addEventListener('click', closeGwEditModal);
+  document.getElementById('gw-edit-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'gw-edit-modal') closeGwEditModal();
+  });
+  document.getElementById('gw-edit-save').addEventListener('click', saveGwEditRecord);
+  document.getElementById('gw-edit-delete').addEventListener('click', deleteGwEditRecord);
 </script>
 
 </body>
