@@ -597,6 +597,7 @@
   // and any single free proxy can go down or rate-limit, so we try each
   // in turn until one works.
   const PROXY_BUILDERS = [
+    url => "/.netlify/functions/fpl-proxy?url=" + encodeURIComponent(url),
     url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
     url => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(url),
     url => "https://proxy.corsfix.com/?" + url
